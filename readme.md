@@ -41,3 +41,4 @@ You will also need to set the url they will be redirected to upon logout. Set th
 `npm start` and navigate to `http://localhost:3000`.
 
 Click on `Sign up` and register your first user for your business! 🚀
+# Kinde_API_Test

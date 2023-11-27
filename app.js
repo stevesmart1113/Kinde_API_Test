@@ -19,6 +19,54 @@ const config = {
 app.set("view engine", "pug");
 setupKinde(config, app);
 
+/**************************
+ * Gets access token
+ **************************/
+const getAccessToken = async () => {
+  try {
+    const searchParams = {
+      grant_type: "client_credentials",
+      client_id: process.env.KINDE_CLIENT_ID,
+      client_secret: process.env.KINDE_CLIENT_SECRET,
+      audience: "https://devmobilia.kinde.com/api",
+    };
+
+    const res = await fetch("https://devmobilia.kinde.com/oauth2/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams(searchParams),
+    });
+    const token = await res.json();
+    console.log({ token });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+/*************************************
+ * Returns a list of my organizations
+ *************************************/
+app.get("/", async (req, res) => {
+  const apiUrl = "https://devmobilia.kinde.com/v1/organizations";
+  try {
+    // Get the access token at this point.
+    const accessToken = await getAccessToken();
+    const response = await axios.post(apiUrl, userData, {
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    console.log("User added successfully:", response.data);
+  } catch (error) {
+    console.error("Error adding user:", error.message);
+  }
+});
+
 app.get("/", (req, res) => {
   if (req.session && req.session.kindeAccessToken) {
     res.redirect("/admin");
